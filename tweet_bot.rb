@@ -1,15 +1,63 @@
+def load_dict
+  word_array = Array.new
+  File.foreach( '/usr/share/dict/words' ) do |line|
+    if line.chomp.length > 1
+      word_array.push(line.chomp)
+    end
+  end
+  word_array
+end
+
+def find_highest_char(in_string)
+  highest_char = in_string[0]
+  in_string.each_char do |c|
+    if (c > highest_char)
+      highest_char = c
+    end
+  end
+  if highest_char != 'z'
+    highest_char = highest_char.next
+  end
+  highest_char
+end
+
+def find_selected_words(in_string, highest_char, word_array)
+  selected_words = Array.new
+  word_array.each do |w|
+    if highest_char != 'z' && w > highest_char #Get out of loop if we've found the last possible word.
+      break
+    end
+    if (in_string.include? w)
+      selected_words.push(w)
+    end
+  end
+  selected_words
+end
+
+def find_longest_word(selected_words)
+  longest_word = selected_words.first
+  selected_words.each_with_index do |s,i|
+
+    if s.length > longest_word.length
+      longest_word = s
+    end
+
+  end
+  longest_word
+end
+
 def rand_char(len)
   rand(36**len).to_s(36)
 end
 
-def check_password_strength(in_string)
+def check_password_strength(in_string, word_array)
   num_char_types = count_character_types(in_string)
-  out_pw = check_dictionary(in_string)
+  out_pw = check_dictionary(in_string, word_array)
   out_length = out_pw.length
   pw_strength = num_char_types * out_length
   message = ''
   if pw_strength >= 50
-    message = "Congratulations on your strong password"
+    message = "Congratulations on your strong password: #{out_pw}"
   elsif (11..49) === pw_strength
     message =  out_pw << fix_password(num_char_types, out_length)
   elsif pw_strength <= 10
@@ -39,22 +87,27 @@ def count_character_types(in_string)
       in_string =~ /[_*!@#$%&+=|{}]/
     char_types += 1
   end
-
   char_types
 end
 
-#This is my shortcut hack.  I know that if I were implementing this for real, I would probably connect to a dictionary api
-#and check for words that way.  To avoid the "pass", "word" problem, I would have the strings returned in size order
-def check_dictionary(in_string)
-  new_string = ""
-  dictionary = ['password','pass','word','per','goat','cat']
-  dictionary.each do |d|
-    if (in_string.include? d)
-      return in_string.sub(d,rand_char(1))
+def check_dictionary(in_string, word_array)
+  highest_char = find_highest_char(in_string)
+  selected_words = find_selected_words(in_string, highest_char, word_array)
+  words_to_find = true
+  while (words_to_find)
+    longest_word = find_longest_word(selected_words)
+    selected_words.delete(longest_word)
+    if (in_string.include? longest_word)
+      in_string = in_string.sub(longest_word,rand_char(1))
+    else
+      words_to_find = false
     end
   end
+  in_string
 end
 
-puts check_password_strength("password1")
-puts check_password_strength("goat m4n")
-puts check_password_strength("s0_0per 5n4k3")
+word_array = load_dict        #only load this once
+puts check_password_strength("password1", word_array)
+puts check_password_strength("goat m4n", word_array)
+puts check_password_strength("s0_0per 5n4k3", word_array)
+puts check_password_strength("hello1 #$% 1234234world", word_array)
