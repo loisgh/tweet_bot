@@ -106,7 +106,10 @@ def check_dictionary(in_string, word_array)
   in_string
 end
 
+
 word_array = load_dict        #only load this once
+
+
 puts check_password_strength("password1", word_array)
 puts check_password_strength("goat m4n", word_array)
 puts check_password_strength("s0_0per 5n4k3", word_array)
