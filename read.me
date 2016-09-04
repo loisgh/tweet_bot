@@ -2,4 +2,5 @@ This application validates TweetSec passwords.
 You can run the script by invoking the check_password_strength method with a string password parameter. 
 There are some examples of this at the bottom of the file.  
 
-Also, I just want to point out that I didn’t fully implement the “dictionary” piece of this process.  If this were going to be production code and I had longer to work on this, I would have found a dictionary api to use.  Ideally this would have checked strings against a dictionary and found the longest word possible to replace.  As I was dealing with a limited time span, I simply implemented something simple that worked with the few test cases that I have.  
+In this version, I have implemented a full dictionary function.  The dictionary is the standard one that
+comes with mac's or linux.  It's located at '/usr/share/dict/words'.

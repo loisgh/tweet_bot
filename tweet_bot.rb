@@ -34,18 +34,6 @@ def find_selected_words(in_string, highest_char, word_array)
   selected_words
 end
 
-def find_longest_word(selected_words)
-  longest_word = selected_words.first
-  selected_words.each_with_index do |s,i|
-
-    if s.length > longest_word.length
-      longest_word = s
-    end
-
-  end
-  longest_word
-end
-
 def rand_char(len)
   rand(36**len).to_s(36)
 end
@@ -93,23 +81,15 @@ end
 def check_dictionary(in_string, word_array)
   highest_char = find_highest_char(in_string)
   selected_words = find_selected_words(in_string, highest_char, word_array)
-  words_to_find = true
-  while (words_to_find)
-    longest_word = find_longest_word(selected_words)
-    selected_words.delete(longest_word)
-    if (in_string.include? longest_word)
-      in_string = in_string.sub(longest_word,rand_char(1))
-    else
-      words_to_find = false
+  selected_words.sort_by(&:length).reverse.each do |s|
+    if (in_string.include? s)
+      in_string = in_string.sub(s,rand_char(1))
     end
   end
   in_string
 end
 
-
 word_array = load_dict        #only load this once
-
-
 puts check_password_strength("password1", word_array)
 puts check_password_strength("goat m4n", word_array)
 puts check_password_strength("s0_0per 5n4k3", word_array)
